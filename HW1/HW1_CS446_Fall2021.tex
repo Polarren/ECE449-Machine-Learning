@@ -1,0 +1,290 @@
+\documentclass{article}
+        \usepackage[margin=1in]{geometry}
+        \usepackage{hyperref}
+        \usepackage{amsmath,amsfonts,amssymb,amsthm,commath,dsfont}
+        \usepackage{bm}
+        \usepackage{enumitem}
+        \usepackage{framed}
+        \usepackage{xspace}
+        \usepackage{microtype}
+        \usepackage{float}
+        \usepackage[round]{natbib}
+        \usepackage{cleveref}
+        \usepackage[dvipsnames]{xcolor}
+        \usepackage{graphicx}
+        \usepackage{listings}
+        \usepackage[breakable]{tcolorbox}
+        \tcbset{breakable}
+        \usepackage{mathtools}
+        \usepackage{autonum}
+        \usepackage{comment}
+        
+        \newcommand{\colbar}{\rule[-3mm]{.3mm}{1.5em}}
+        \newcommand{\rowbar}{\rule[.5ex]{1.5em}{.3mm}}
+        \newcommand{\francis}[1]{{\color{blue}#1}}
+        \DeclareMathOperator{\rank}{rank}
+        
+        \newcommand{\yb}[1]{{\color{blue} #1}}
+
+        % following loops. stolen from djhsu
+        \def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+        % \bbA, \bbB, ...
+        \def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+        \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+        
+        % \cA, \cB, ...
+        \def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+        \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+        
+        % \vA, \vB, ..., \va, \vb, ...
+        \def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+        \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+        
+        % \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+        \def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+        \ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+        \newcommand\T{{\scriptscriptstyle\mathsf{T}}}
+        \def\diag{\textup{diag}}
+        
+        \DeclareMathOperator*{\argmin}{arg\,min}
+        \DeclareMathOperator*{\argmax}{arg\,max}
+
+        \def\SPAN{\textup{span}}
+        \def\tu{\textup{u}}
+        \def\R{\mathbb{R}}
+        \def\E{\mathbb{E}}
+        \def\Z{\mathbb{Z}}
+        \def\be{\mathbf{e}}
+        \def\nf{\nabla f}
+        \def\veps{\varepsilon}
+        \def\cl{\textup{cl}}
+        \def\inte{\textup{int}}
+        \def\dom{\textup{dom}}
+        \def\Rad{\textup{Rad}}
+        \def\lsq{\ell_{\textup{sq}}}
+        \def\hcR{\widehat{\cR}}
+        \def\hcRl{\hcR_\ell}
+        \def\cRl{\cR_\ell}
+        \def\hcE{\widehat{\cE}}
+        \def\cEl{\cE_\ell}
+        \def\hcEl{\hcE_\ell}
+        \def\eps{\epsilon}
+        \def\1{\mathds{1}}
+        \newcommand{\red}[1]{{\color{red} #1}}
+        \newcommand{\blue}[1]{{\color{blue} #1}}
+        \def\srelu{\sigma_{\textup{r}}}
+        \def\vsrelu{\vec{\sigma_{\textup{r}}}}
+        \def\vol{\textup{vol}}
+
+        \newcommand{\ip}[2]{\left\langle #1, #2 \right \rangle}
+        \newcommand{\mjt}[1]{{\color{blue}\emph\textbf{[M:}~#1~\textbf{]}}}
+        \newcommand{\sahand}[1]{{\color{green}\emph\textbf{[Sah:}~#1~\textbf{]}}}
+
+        \newtheorem{fact}{Fact}
+        \newtheorem{lemma}{Lemma}
+        \newtheorem{claim}{Claim}
+        \newtheorem{proposition}{Proposition}
+        \newtheorem{theorem}{Theorem}
+        \newtheorem{corollary}{Corollary}
+        \newtheorem{condition}{Condition}
+        \theoremstyle{definition}
+        \newtheorem{definition}{Definition}
+        \theoremstyle{remark}
+        \newtheorem{remark}{Remark}
+        \newtheorem{example}{Example}
+
+        \newenvironment{Q}
+        {%
+          \clearpage
+          \item
+        }
+        {%
+          \phantom{s} %lol doesn't work
+          \bigskip
+          \textbf{Solution.}
+        }
+
+        \title{CS 446 / ECE 449 --- Homework 1}
+        \author{\emph{your NetID here}}
+        %\date{Version 1.0}
+
+        \begin{document}
+        \maketitle
+
+        \noindent\textbf{Instructions.}
+        \begin{itemize}
+          \item
+            Homework is due \textbf{Wednesday, September 15, at noon CST}; you have \textbf{3} late days in total for \textbf{all Homeworks}.
+        
+          \item
+            Everyone must submit individually at gradescope under \texttt{hw1} and \texttt{hw1code}.
+        
+          \item
+            The ``written'' submission at \texttt{hw1} \textbf{must be typed}, and submitted in
+            any format gradescope accepts (to be safe, submit a PDF).  You may use \LaTeX, markdown,
+            google docs, MS word, whatever you like; but it must be typed!
+        
+          \item
+            When submitting at \texttt{hw1}, gradescope will ask you to m\textbf{ark out boxes
+            around each of your answers}; please do this precisely!
+        
+          \item
+            Please make sure your NetID is clear and large on the first page of the homework.
+        
+          \item
+            Your solution \textbf{must} be written in your own words.
+            Please see the course webpage for full \textbf{academic integrity} information.
+            You should cite any external reference you use.
+        
+          \item
+            We reserve the right to reduce the auto-graded score for
+            \texttt{hw1code} if we detect funny business (e.g., your solution
+            lacks any algorithm and hard-codes answers you obtained from
+            someone else, or simply via trial-and-error with the autograder).
+            
+          \item
+           When submitting to \texttt{hw1code}, only upload \texttt{hw1.py} and \texttt{hw1\_utils.py}. Additional files will be ignored.
+           
+        \end{itemize}
+        %\noindent\textbf{Version History.}
+        %\begin{enumerate}
+        %    \item Initial version.
+        %\end{enumerate}
+        
+\begin{enumerate}[font={\Large\bfseries},left=0pt]
+
+
+\begin{Q}
+\textbf{\Large Linear Regression.}
+\begin{enumerate}
+    \item Consider a linear regression problem with a dataset containing $N$ data points $\{(\bm{x}^{(i)}, y^{(i)})\}^{N}_{i=1}$,
+      where $\bm{x}^{(i)} \in \mathbb{R}^d$. The accumulated loss function is given by:
+      $$L_{OLS}(\bm{w}) = \frac{1}{2}||\bm{Xw} - \bm{y}||^2_2 $$
+      where $\bm{y} \in \mathbb{R}^N$, $\bm{X} \in \mathbb{R}^{N \times (d+1)}$ and $\bm{w} \in \mathbb{R}^{d+1}$.
+      
+      \begin{enumerate}
+          \item Find the Hessian matrix of $L_{OLS}(\bm{w})$.\\
+          \textbf{Hint:} You may want to use the fact that  $||\bm{Xw} - \bm{y}||^2_2=(\bm{Xw} - \bm{y})^{\top}(\bm{Xw} - \bm{y})$
+          \item    Recall that a twice-continuously differential function $f(\bm{x})$ is strictly convex i.f.f. its Hessian is positive definite for all $\bm{x}$. Prove that if $N$ is less than the input dimension $d$, $L_{OLS}(\bm{w})$ can not be strictly convex. 
+          \item No matter what $\bm{X}$ is, prove that for $\forall \bm{w}_1, \bm{w_2}\in \argmin_{\bm{w}\in \mathbb{R}^{d+1}} \ L_{OLS}(\bm{w})$, we have $\bm{X}\bm{w_1}=\bm{X}\bm{w}_2$. Note that $\bm{w}_1,\bm{w}_2$ can be different.
+          
+          \textbf{Hint:} Use the convexity of the loss function and the convex combinations of $\bm{w}_1$ and $\bm{w}_2$.
+      \end{enumerate}
+     \item  Consider the same dataset with an L2-norm regularization added to the OLS loss function. Linear regression with L2 regularization is also called Ridge regression.
+      Recall the composite loss function of ridge regression:
+      $$L_{ridge}(\bm{w}) = \frac{1}{2}||\bm{Xw} - \bm{y}||^2_2 + \frac{\lambda}{2}||\bm{w}||_2^2$$
+      \begin{enumerate}
+      \item One advantage of ridge regression is that for a positive regularization constant ($\lambda > 0$),
+      the matrix $(\bm{X}^\top\bm{X} + \lambda \bm{I})$ is always invertible. Prove that the matrix 
+      $(\bm{X}^\top\bm{X} + \lambda \bm{I})$ is invertible by showing that it's positive definite.
+          \item Knowing that $L_{ridge}(\bm{w})$ is a convex function, show that the estimator for ridge regression is:
+        $$\hat{\bm{w}} = (\bm{X}^\top\bm{X} + \lambda \bm{I})^{-1}\bm{X}^\top\bm{y}$$
+        
+      \end{enumerate}
+\end{enumerate}
+\end{Q}
+\begin{tcolorbox}
+\end{tcolorbox}
+
+
+
+
+\begin{Q}
+\textbf{\Large Programming - Linear Regression.}
+
+Recall that the empirical risk in the linear regression method is defined as $\hcR(\vw) := \frac{1}{2N}\sum_{i=1}^N (\vw^\top \vx^{(i)} - y^{(i)})^2$, where $\vx^{(i)} \in \R^d$ is a data point and $y^{(i)}$ is an associated label.
+\begin{enumerate}
+\item \textbf{Implement linear regression using gradient descent in the \texttt{linear\_gd(X, Y, lrate, num\_iter)} function of \texttt{hw1.py}.} 
+
+The arguments for this function are: \texttt{X} as the training features, a tensor with shape $N \times d$; \texttt{Y} as the training labels, an $N \times 1$ tensor; \texttt{lrate} as learning rate (step size), a float number; and \texttt{num\_iter} as the number of iterations for gradient descent to run. The objective of this function is to find parameters $\vw$ that minimize the empirical risk $\hcR(\vw)$ using gradient descent (only gradient descent). 
+
+To keep consistent with the standard program and get correctly scored, \textbf{prepend} a column of ones to \texttt{X} in order to accommodate the bias term in $\vw$, thus $\vw$ should has $d+1$ entries. Then use $\vw = 0$ as the initial parameters, and return 
+
+\textbf{Hint.} If your are new to machine learning or programming with pytorch, we offer some kind suggestions. First, try using the vector/matrix operations provided in pytorch and avoid using for-loops. This will improve both the efficiency and style of your program. Second, create your own test cases for debugging before submission. With very few samples in your own test case, it is convenient to compare the program output with your manual calculation. Third, to avoid matrix computation error, remember to check the shapes of tensors regularly. 
+            
+\textbf{Library routines:} \texttt{torch.matmul (@), torch.tensor.shape, torch.tensor.t, torch.cat,} \\ \texttt{torch.ones, torch.zeros, torch.reshape}.
+            
+\item \textbf{Implement linear regression by using the pseudo inverse to solve for $\vw$ in the \\ \texttt{linear\_normal(X,Y)} function of \texttt{hw1.py}.}
+
+The arguments for this function are: \texttt{X} as the training features, a tensor with shape $N \times d$ tensor; \texttt{Y} as the training labels, an $N \times 1$ tensor. To keep consistent with the standard program and get correctly scored, \textbf{prepend} a column of ones to \texttt{X} in order to accommodate the bias term in $\vw$, thus $\vw$ should has $d+1$ entries.
+            
+\textbf{Library routines:} \texttt{torch.matmul (@), torch.cat, torch.ones, torch.pinverse}.
+            
+\item \textbf{Implement the \texttt{plot\_linear()} function in \texttt{hw1.py}.} Follow the steps below.
+
+Use the provided function \texttt{hw1\_utils.load\_reg\_data()} to generate a training set \texttt{X} and training labels \texttt{Y}. Then use \texttt{linear\_normal()} to calculate the regression results $\vw$. Eventually  plot the points of dataset and regressed curve.   Return the plot as output. Note that \texttt{plot\_linear()} should return the figure object and you should \textbf{include the visualization in your written submission}.
+
+\textbf{Hint.} If your are new to plotting machine learning visualizations, we offer some kind suggestions. \texttt{matplotlib.pyplot} is an ``extremely'' useful tool in machine learning, and we commonly refer to it as \texttt{plt}. Please first get to know the most basic usages by examples from its official website (such as scatter plots, line plots, etc.). As for our programming question specifically, you may divide and conquer it by first plotting the points in the dataset, then plotting the linear regression curve.
+
+\textbf{Library routines:} \texttt{torch.matmul (@), torch.cat, torch.ones, plt.plot, plt.scatter,} \\ \texttt{plt.show, plt.gcf} where \texttt{plt} refers to the \texttt{matplotlib.pyplot} library.
+\end{enumerate}
+\end{Q}
+
+\begin{Q}
+\textbf{\Large Programming - Logistic Regression.}
+
+Recall the empirical risk $\hcR$ for logistic regression (as presented in lecture 3):
+\begin{align}
+    \hcR_{\log}(\vw) = \frac{1}{N} \sum_{i=1}^N \log ( 1 + \exp( - y^{(i)} \vw^\top \vx^{(i)} ) ).
+\end{align}
+Here you will minimize this risk using gradient descent.
+\begin{enumerate}
+% 
+
+\item In your \textbf{written submission}, derive the gradient descent update rule for this empirical risk by taking the gradient. Write your answer in terms of the learning rate (step size) $\eta$, previous parameters $\vw$, new parameters $\vw'$, number of examples $N$, and training examples $\vx^{(i)}$.  Show all of your steps.
+
+\item Implement the \texttt{logistic()} function in \texttt{hw1.py}.  You are given as input a training set \texttt{X}, training labels \texttt{Y}, a learning rate (step size) \texttt{lrate}, and number of gradient updates \texttt{num\_iter}.  Implement gradient descent to find parameters $\vw$ that minimize the empirical risk $\hcR_{\log}(\vw)$. Perform gradient descent for \texttt{num\_iter} updates with a learning rate (step size) of \texttt{lrate}. Same as previous questions, initialize $\vw = 0$, return $\vw$ as output, and prepend \texttt{X} with a column of ones.
+          
+\textbf{Library routines:} \texttt{torch.matmul (@), torch.tensor.t, torch.exp.}
+          
+\item Implement the \texttt{logistic\_vs\_ols()} function in \texttt{hw1.py}. Use \texttt{hw1\_utils.load\_logistic\_data()} to generate a training set \texttt{X} and training labels \texttt{Y}.  Run \texttt{logistic(X,Y)} from part (b) taking \texttt{X} and \texttt{Y} as input to obtain parameters $\vw$ (use the defaults for \texttt{num\_iter} and \texttt{lrate}).  Also run \texttt{linear\_gd(X,Y)} from Problem 2 to obtain parameters $\vw$.  Plot the decision boundaries for your logistic regression and least squares models along with the data \texttt{X}. [Note: As we learned in the class that the decision rule of Least Squares and Logistic Regression for predicting the class label is $\mbox{sign}(\hat{\bm w}^\top \bm x)$, the decision boundary can be obtained from $\hat{\bm w}^\top \bm x=0$, i.e., for $d=2$, we have $x_2=-(\hat w_0+\hat w_1\times x_1)/\hat w_2$.] Include the visualizations in your \textbf{written submission}. Which model appears to classify the data better? Explain in the \textbf{written submission} that why you believe it is better for this problem. 
+          
+\textbf{Library routines:} \texttt{torch.linspace, plt.scatter, plt.plot, plt.show, plt.gcf.}
+\end{enumerate}
+\end{Q}
+
+
+\begin{Q}
+\textbf{\Large Convexity, Lipschitz Continuity, and Smoothness}
+\begin{enumerate}
+    \item Convexity
+    \begin{enumerate}
+        \item Show that if a function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ is convex, then for any matrix $\bm{A} \in \mathbb{R}^{n \times m}$ and vector $\bm{b}\in\mathbb{R}^n $, the function $g:\mathbb{R}^m\to \mathbb{R}$ defined by $g(\bm{x})=f(\bm{Ax}+\bm{b})$ is convex, where $\vx \in \mathbb{R}^m$.
+    \item Prove that if the differentiable function $f$ is $\lambda$-strongly convex and the differentiable function $g$ is convex then $f+g$ is $\lambda$-strongly convex.
+    \item Given $m$ convex functions $\{f_i:\mathbb{R}^n\to \mathbb{R}\}_{i=1}^m$, denote
+    \begin{align}
+        f(\bm{x})=\max_{i\in [m]} \ f_i(\bm{x}),
+    \end{align}
+    where $[m]=\{1,2,\dots,m\}$. Prove that $f$ is convex.
+    \end{enumerate}
+    \item Lipschitzness and Smoothness
+    
+    We say a function $f: \mathbb{R}^n \rightarrow \mathbb{R}^d$ is $\rho$-Lipschitz if $\forall \bm{x}_1, \bm{x}_2 \in \mathbb{R}^n $, it holds that
+    $\| f(\bm{x}_1) - f(\bm{x}_2)\|_2 \leq \rho \| \bm{x}_1 - \bm{x}_2\|_2$.
+    
+    \begin{enumerate}
+        
+    \item Prove that if $f : \mathbb{R}^n \rightarrow \mathbb{R}^m$ and $g : \mathbb{R}^m\rightarrow \mathbb{R}^d$ are $\rho$-Lipschitz functions, then the composite $g\circ f:\mathbb{R}^n\rightarrow \mathbb{R}^d$ defined by $(g\circ f)(\bm{x})=g(f(\bm{x}))$ is $\rho^2$-Lipschitz.
+
+    \item Given a differentiable function $f:\mathbb{R}^n\to \mathbb{R}$ whose gradient is $\beta$-Lipschitz, prove that for $\forall \bm{x}, \bm{y}\in \mathbb{R}^n$ we have
+    $$
+       f(\bm{y})-f(\bm{x})\leq \nabla f(\bm{x})^\top (\bm{y}-\bm{x}) +\frac{\beta}{2}\|\bm{y}-\bm{x}\|^2_2.
+    $$
+    
+    \textbf{Hint:} You are not required to follow the hints, but please consider them if you have no idea for proof. (1) Define a tool function $\phi(t)=f((1-t)\bm{x}+t\bm{y})$, thus $f(\bm{y})-f(\bm{x})=\phi(1)-\phi(0)=\int_{0}^{1}(\mathtt{figure\ it\ out})$; (2) If you get stuck at the final steps, taking a look at the Cauchy–Schwarz inequality may be helpful.
+    
+    \end{enumerate}
+\end{enumerate}
+
+
+\end{Q}
+\begin{tcolorbox}
+
+\end{tcolorbox}
+
+    \end{enumerate}
+
+
+
+\end{document}
