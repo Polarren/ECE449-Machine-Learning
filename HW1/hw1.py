@@ -1,6 +1,7 @@
 import torch
 import hw1_utils as utils
-
+import matplotlib.pyplot as plt
+import numpy
 
 '''
     Important
@@ -31,7 +32,7 @@ def linear_gd(X, Y, lrate=0.01, num_iter=1000):
     
     NOTE: Prepend a column of ones to X. (different from slides!!!)
     '''
-    N,d = torch.tensor.size(X)
+    N,d = X.shape
     w = torch.zeros(d+1,1)
     ones = torch.ones(N,1)
     X = torch.cat((ones,X),1)
@@ -56,7 +57,12 @@ def linear_normal(X, Y):
     
     NOTE: Prepend a column of ones to X. (different from slides!!!)
     '''
-    pass
+    N,d = X.shape
+    ones = torch.ones(N,1)
+    X = torch.cat((ones,X),1)
+    w = torch.matmul( torch.pinverse(X), Y)
+    return w
+
 
 
 def plot_linear():
@@ -64,7 +70,24 @@ def plot_linear():
         Returns:
             Figure: the figure plotted with matplotlib
     '''
-    pass
+
+    X,Y=utils.load_reg_data()
+    N,d = X.shape
+    
+    w = linear_normal(X,Y)
+    ones = torch.ones(N,1)
+    # X = torch.cat((ones,X),1)
+    
+    # print("Dimension of X is: "+str(X.shape))
+    plot = plt.figure()
+    plt.scatter(X,Y)
+    plt.plot(X,torch.matmul(torch.cat((ones,X),1),w))
+    plt.title('HW1_2(c):Linear Regression')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.show()
+    plt.savefig('HW1_2(c).png')
+    return plot
 
 
 # Problem Logistic Regression
@@ -79,7 +102,31 @@ def logistic(X, Y, lrate=.01, num_iter=1000):
     
     NOTE: Prepend a column of ones to X. (different from slides) 
     '''
-    pass
+    N,d = X.shape
+    w = torch.zeros(d+1,1)
+    ones = torch.ones(N,1)
+    X = torch.cat((ones,X),1)
+    t = 0
+    # print("Dimension of X is: "+str(X.shape))
+    # print("Dimension of X is: "+str(X.shape))
+    # print("Dimension of w is: "+str(w.shape))
+    while t < num_iter:
+        sum = torch.zeros(d+1,1)
+        for i in range(N):
+            exp = torch.exp(-Y[i]*torch.matmul(X[i],w))
+            # print ('sum=',sum)
+            # print ('newsum =', (-Y[i] * X[i].reshape((d+1,1))*exp)/(1+exp))
+            sum += (-Y[i] * X[i].reshape((d+1,1))*exp)/(1+exp)
+        grad = sum/N
+        # if t<3:
+        #     print("grad is: "+str(grad))
+        #     print('w is :',w)
+        w = w - lrate*grad
+        t+=1
+    # print("Dimension of exp is: "+str(exp.shape))
+    # print("Dimension of w is: "+str(w.shape))
+    return w
+
 
 
 def logistic_vs_ols():
@@ -87,4 +134,25 @@ def logistic_vs_ols():
     Returns:
         Figure: the figure plotted with matplotlib
     '''
-    pass
+    X,Y=utils.load_logistic_data()
+    N,d = X.shape
+    #print('N,d is : ',N,d)
+    w_lin = linear_gd(X,Y)
+    w_logi = logistic(X,Y)
+    ones = torch.ones(N,1)
+    # X = torch.cat((ones,X),1)
+    
+    # print("Dimension of X is: "+str(X.shape))
+    plot = plt.figure()
+    plt.scatter(X.t()[0],X.t()[1])
+    x2_lin = - w_lin[1]/w_lin[2]*X.t()[0]-w_lin[0]/w_lin[2]
+    x2_logi = - w_logi[1]/w_logi[2]*X.t()[0]-w_logi[0]/w_logi[2]
+    plt.plot(X.t()[0],x2_lin,label='Linear')
+    plt.plot(X.t()[0],x2_logi,label='Logistic')
+    plt.legend()
+    plt.title('HW1_3(c)')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.show()
+    # plt.savefig('HW1_2(c).png')
+    return plot
