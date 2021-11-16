@@ -1,0 +1,55 @@
+\begin{Q}
+\textbf{\Large Variational Auto-Encoders}\\
+
+We are training a variational auto-encoder (VAE). It contains the following parts: the input are vectors $\vx$, the latent vector is $\vz$, the encoder models the probability of $q_{\phi}(\vz|\vx)$, and the decoder is $p_{\theta}(\vx|\vz)$. Based on this notation, we will first look at several problems related to the structure of variational auto-encoder.
+
+\begin{enumerate}
+
+\item We assume the latent vector $\vz \in \mathbb{R}^{2}$ follows a multi-variate Gaussian distribution $\mathcal{N}$. Please compute the output dimension of the encoder $q_{\phi}(\cdot)$ under the following cases and briefly explain why. (If ``output dimension'' is not clear enough for you, think of it as ``how many real numbers $r\in \mathbb{R}$ are needed to output for the sampling of latent vectors.'')
+
+\begin{itemize}
+    \item We assume $\mathcal{N}$ follows a multi-variate Gaussian distribution with an \textbf{identity matrix} as the covariance matrix.
+    \item We assume $\mathcal{N}$ follows a multi-variate Gaussian distribution with an \textbf{diagonal matrix} as the covariance matrix.
+\end{itemize}
+
+\item
+We then consider the problems related to the understanding of KL-Divergence.
+
+\begin{enumerate}
+    \item Using the inequality of $\log(x) \leq x - 1$, prove that $D_{KL}(p(x), q(x))\ge 0$ holds for two arbitrary distributions $p(x)$ and $q(x)$.
+    
+    \item Consider a binary classification problem with input vectors $\vx$ and labels $y\in\{0, 1\}$. The distribution of the ground truth label is denoted as $P(y)$. The expression of $P(y)$ is as Eq~\ref{eq:gt}, where $y_{gt}$ is the ground truth label.
+    \begin{equation}
+        P(y=y_{gt})=1, P(y=1-y_{gt})=0
+        \label{eq:gt}
+    \end{equation}
+    Suppose we are trying to predict the label of $\vx$ with a linear model $\vw$ and sigmoid function, then the distribution of $y$ is denoted as $Q(y)$ and computed as Eq.~\ref{eq:sigmoid}.
+    \begin{equation}
+        Q(y=0|\vx)=\frac{1}{1+\exp{(-\vw^\top \vx)}},\quad Q(y=1|\vx)=\frac{\exp{(-\vw^\top \vx)}}{1+\exp{(-\vw^\top \vx)}}
+        \label{eq:sigmoid}
+    \end{equation}
+    
+    With the above information, compute the KL Divergence between the distributions of $P(y)$ and $Q(y|\vx)$, specifically $D_{KL}(P(y), Q(y|\vx))=\mathbf{E}_{y\sim P(y)}[\log\frac{P(y)}{Q(y|\vx)}$]. 
+    
+    Expand your solution to the clearest form. To get full credits, your may only use $y_{gt}, \vw, \vx$ and related constants in your expression.
+\end{enumerate}
+
+\item VAE is a special branch of generative method in sampling the latent vectors $\widetilde{\vz}$ from $q_{\phi}(\vz|\vx)$ instead of directly regressing the values of $\vz$. Read an example implementation of VAE at \url{https://github.com/AntixK/PyTorch-VAE/blob/master/models/vanilla_vae.py} and answer the following questions:
+
+\begin{enumerate}
+    \item Find the functions and lines related to the sampling of $\widetilde{\vz}$ from $q_{\phi}(\vz|\vx)$. Specifying the names of the functions and the related lines can lead to full credits. Please note that if your range is too broad (in the extreme case, covering every line in the file) we cannot give your full credit.
+    
+    \item
+    Suppose our latent variable is $\vz\in\mathbb{R}^{2}$ sampled from a Gaussian distribution with mean $\vmu\in\mathbb{R}^2$ and a diagonal covariance matrix $\vSigma=\mathtt{Diag}\{\sigma_1^2, \sigma_2^2\}$. Then another random variable $\vv\in\mathbb{R}^2$ is sampled from a Gaussian distribution $\mathcal{N}(0, \vI)$. Show that $\vV = [\sigma_1, \sigma_2]^\top \circ \vv + \vmu$ follows the same distribution as $\vz$. ($\circ$ denotes Hadamard product, which means element-wide product; $\mathcal{N}(0, \vI)$ denotes the multi-variate Gaussian with zero mean and identity matrix as covariance.)
+    
+    \item
+    Under the same setting of the Question ii, we can sample the latent vector $\widetilde{\vz}$ by the process $\widetilde{\vz}=[\sigma_1, \sigma_2]^\top \circ \widetilde{\vv} + \vmu$, where $\widetilde{\vv}$ is a sampled random variable from $\mathcal{N}(0, \vI)$. Consider the process of training, where we apply back-propagation to train the neural networks. Given the gradient on $\widetilde{\vz}$ as $\widetilde{\vg}\in\mathbb{R}^2$, which can be written as $[\widetilde{g}_1, \widetilde{g}_2]$. \textbf{What are the gradients of the output of the encoder: $\vmu, \sigma_1, \sigma_2$?} (Assume the KL-Divergence loss is not considered in this part.)
+    
+    \textbf{Note:} To get full credit, you can use any constants and the variables of $\widetilde{\vv}=[\widetilde{v_1}, \widetilde{v_2}]$, $\widetilde{\vg}=[\widetilde{g}_1, \widetilde{g}_2]$, and $\vmu, \sigma_1, \sigma_2$.
+    
+    \item During reading the code, you might feel confused about why we are sampling $\widetilde{\vz}$ in such a way, instead of generating a random value directly. But now, you could have some clues. Please briefly explain ``Why we are sampling $\widetilde{\vz}$ with $\mathcal{N}(0, 1)$, instead of directly generating the values.''
+\end{enumerate}
+
+\end{enumerate}
+
+\end{Q}

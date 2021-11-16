@@ -1,0 +1,52 @@
+\begin{Q}
+\textbf{\Large Principal Component Analysis}\\
+
+\begin{enumerate}
+
+\item In the lecture, we mainly discuss the case where the data centers around the origin point (see slides 14/21). If the data does not center around the origin point, the PCA algorithm will first subtract the mean of all the data, then calculate the projection $\vw$, and eventually add the mean back (see slides 15/21). In this question, we will prove that subtracting the mean is reasonable for PCA. However, since proving the general theorem is beyond the scope of this course, we will focus on the 2-dimensional case.
+
+For a line on the xy-plane, we denote it as the set of roots/solutions to $f(\vp)=0$, where $f(\vp)=\vv^\top \vp + b$. Provided $N$ points on the xy plane: $\mathcal{P}=[\vp^{(1)}, ..., \vp^{(N)}]$, and $\vp^{(i)}=(x^{(i)}, y^{(i)})$. We want to find the optimal line $\widetilde{f}=0$ with parameters $\widetilde{\vv}$ and $\widetilde{b}$ that minimizes the sum of the squared distances between the points and the line as the equation below.
+
+\begin{equation}
+    \widetilde{\vv}, \widetilde{b}=\arg\min_{\vv, b}\sum_{i=1}^{N}(\frac{\vv^\top \vp^{(i)} + b}{\|\vv\|_2})^2
+\end{equation}
+
+\textbf{Prove that if the optimal line exists, then the mean of the $N$ points is on the line.}
+
+\textbf{Hint. } Without loss of generality, consider the case where $\vv$ is a unit vector. Note that $\vv$ is the normal vector of the line.
+
+\iffalse
+\item We have a set of $N$ two-dimensional points following the Gaussian distribution $\mathcal{N}(\vm, \mathbf{\Sigma})$. We want to compute the $\widetilde{\vw}$ and $\widetilde{b}$ by applying PCA to this dataset. The $\widetilde{\vw}$ and $\widetilde{b}$ have the same meaning as in question (a).
+
+\textbf{Please compute the values for $\lim_{N\rightarrow \infty}\widetilde{\vw}$ and $\lim_{N\rightarrow \infty}\widetilde{b}$ with $\vm$ and $\mathbf{\Sigma}$.} 
+
+\textbf{Instructions.} You can use $\mathtt{EValue}(\cdot)[x]$ to denote the $x-th$ largest eigenvalue for a matrix, and $\mathtt{EVector}(\cdot)[x]$ to denote the eigenvector for the $x-th$ largest eigenvalue. Note that $x$ starts from 1, not 0, which means the largest eigenvalue has the form $\mathtt{EValue}(\cdot)[1]$.
+
+\fi
+
+\item For each of the following statements, specify whether the statement is true or false. If you think the statement is wrong, explain in 1 to 2 sentences why it is wrong.
+
+
+\begin{itemize}
+\item True or False: As shown in the figure below, PCA seeks a line such that the sum of the vertical distances from the points to the line is minimized.
+\begin{center}
+ \includegraphics[width=8cm]{figs/pca.pdf}
+ \end{center}
+
+\item True or False: PCA seeks a projection that best represents the data in a least-squares sense.
+
+\item True or False: The principal components are not orthogonal to each other.
+
+\item True or False: Solving PCA using SVD might result in a solution which corresponds to a local minimum.
+\end{itemize}
+
+\item In PCA, assume we have \[ \bm X^\top \bm X= \left[ \begin{array}{cccc}
+	12 & 0 & 0 & 0\\
+	0 & 6 & 0 & 0\\
+	0 & 0 & 20 & 0\\
+	0 & 0 & 0 & 10\\
+	\end{array} \right]\] 
+Compute the largest eigenvalue of $\bm X^\top \bm X$ and its corresponding eigenvector.
+
+\end{enumerate}
+\end{Q}

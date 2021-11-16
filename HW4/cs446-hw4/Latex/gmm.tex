@@ -1,0 +1,49 @@
+\begin{Q}
+\textbf{\Large Gaussian Mixture Models}\\
+
+Consider a one-dimensional Gaussian mixture model with $K$ components ($k\in\{1, \ldots, K\}$), each having mean $\mu_k$, variance $\sigma_k^2$, and mixture weight $\pi_k$. Further, we are given a dataset $\mathcal{D} = \{x^{(i)}\}_{i=1}^N$, where $x^{(i)} \in \mathbb{R}$.
+
+
+\begin{enumerate}
+
+\item What is the log-likelihood of the data, i.e., $\log p(\mathcal{D}\mid \mu_k, \sigma_k, \pi_k, 1\leq k\leq K)$, according to the Gaussian Mixture Model, assuming the data samples $x^{(i)}$ are i.i.d.? 
+
+\item Recall the Expectation-Maximization procedure for Gaussian mixture models from our lecture where $r_{ik}=p_{\psi^{(t)}}(\bm{z}^{(i)}=\bm{e}_{k}\mid x^{(i)})$. Prove that $\sum_{k=1}^K r_{ik}=1$.
+
+\item Recall the Expectation-Maximization procedure for Gaussian mixture models from our lecture where Lagrangian is
+\begin{align*}
+    L=\sum_{i=1}^N\sum_{k=1}^K r_{ik}[\tfrac{1}{2\sigma_k^2}(x^{(i)}-\mu_k)^2+\tfrac{1}{2}\log (2\pi \sigma_k^2)-\log \pi_k]+\lambda(\sum_{k=1}^K\pi_k -1).
+\end{align*}
+Show how to derive $\pi_k=\tfrac{1}{N}\sum_{i=1}^N r_{ik}$ from setting $\tfrac{\partial L}{\partial \lambda}=0$ and $\tfrac{\partial L}{\partial \pi_k}=0$ ($1\leq k\leq K$).
+
+\item A nice property of Gaussian mixture is the universal approximation property. Loosely speaking, given any distribution, there exist a Gaussian mixture that can approximate it up to arbitrary accuracy. 
+
+Let us verify this powerful property on discrete distributions. Consider $n$ points $z_1, z_2,\dots, z_n\in \mathbb{R}$, and a discrete distribution characterized by a probability mass function $q$ on $\mathbb{R}$:
+
+\begin{align*}
+    q(x)= \begin{cases}
+    q_i& \quad \text{ if } x=z_i,\\
+    0&\quad \text{otherwise},
+    \end{cases}
+\end{align*}
+where $q_i>0$ and $\sum_{i=1}^n q_i=1$.
+
+Construct a Gaussian mixture on $\mathbb{R}$ that approximates the distribution characterized by the probability mass function $q$ . It is sufficient to describe the construction and show intuitively why it is a good approximation.  You don't need to rigorously prove your results.
+
+\item We have seen the Gaussian mixture with finitely many components ($K$ components), where $\pi_k$ ($k\in \{1, \dots, K\}$) are the mixture weights. Noting that $\sum_{k=1}^K \pi_k=1$ and $\pi_k\geq 0$, we can see that the mixture weights represent a probability mass function. Therefore, we can generalize the Gaussian mixture to combine infinitely many components by using a probability density function.
+
+Formally, let $\mu:\mathbb{R}\to \mathbb{R}$ and $\sigma:\mathbb{R}\to \mathbb{R}_+$ be two functions representing the means and variances, respectively. Let $\pi:\mathbb{R}\to \mathbb{R}_+$ be a probability density function on $\mathbb{R}$ representing the mixture weights. Denote the density of the generalized Gaussian mixture as
+\begin{align}
+    p(x)=\int_{-\infty}^{\infty} \ \frac{1}{\sqrt{2 \pi \sigma(t)^{2} }} \exp\Big( - \frac{(x - \mu(t) )^2}{2 \sigma(t)^2 } \Big) \pi(t) \ dt.
+\end{align}
+Prove that $p$ is a valid density function, i.e., $\forall x\in \mathbb{R}:p(x)\geq0$  and $\int_{-\infty}^{\infty} p(x)dx=1$ (assuming $p(x)$ and $\int_{-\infty}^{\infty} p(x)dx$ exist). 
+
+\textbf{Hint:} See the Fubini's Theorem, but you don't need to worry about the mathematical details. 
+\end{enumerate}
+
+\end{Q}
+
+\begin{tcolorbox}
+
+
+\end{tcolorbox}

@@ -1,0 +1,319 @@
+\documentclass{article}
+        \usepackage[margin=1in]{geometry}
+        \usepackage{hyperref}
+        \usepackage{amsmath,amsfonts,amssymb,amsthm,commath,dsfont}
+        \usepackage{bm}
+        \usepackage{enumitem}
+        \usepackage{framed}
+        \usepackage{xspace}
+        \usepackage{microtype}
+        \usepackage{float}
+        \usepackage[round]{natbib}
+        \usepackage{cleveref}
+        \usepackage[dvipsnames]{xcolor}
+        \usepackage{graphicx}
+        \usepackage{listings}
+        \usepackage[breakable]{tcolorbox}
+        \tcbset{breakable}
+        \usepackage{mathtools}
+        \usepackage{autonum}
+        \usepackage{comment}
+        
+        \newcommand{\colbar}{\rule[-3mm]{.3mm}{1.5em}}
+        \newcommand{\rowbar}{\rule[.5ex]{1.5em}{.3mm}}
+        
+        \DeclareMathOperator{\rank}{rank}
+        
+
+        % following loops. stolen from djhsu
+        \def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+        % \bbA, \bbB, ...
+        \def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+        \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+        
+        % \cA, \cB, ...
+        \def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+        \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+        
+        % \vA, \vB, ..., \va, \vb, ...
+        \def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+        \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+        
+        % \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+        \def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+        \ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+        \newcommand\T{{\scriptscriptstyle\mathsf{T}}}
+        \def\diag{\textup{diag}}
+        
+        \DeclareMathOperator*{\argmin}{arg\,min}
+        \DeclareMathOperator*{\argmax}{arg\,max}
+        \DeclareMathOperator*{\sign}{sign}
+
+        \def\SPAN{\textup{span}}
+        \def\tu{\textup{u}}
+        \def\R{\mathbb{R}}
+        \def\E{\mathbb{E}}
+        \def\Z{\mathbb{Z}}
+        \def\be{ \bm{e}}
+        \def\nf{\nabla f}
+        \def\veps{\varepsilon}
+        \def\cl{\textup{cl}}
+        \def\inte{\textup{int}}
+        \def\dom{\textup{dom}}
+        \def\Rad{\textup{Rad}}
+        \def\lsq{\ell_{\textup{sq}}}
+        \def\hcR{\widehat{\cR}}
+        \def\hcRl{\hcR_\ell}
+        \def\cRl{\cR_\ell}
+        \def\hcE{\widehat{\cE}}
+        \def\cEl{\cE_\ell}
+        \def\hcEl{\hcE_\ell}
+        \def\eps{\epsilon}
+        \def\1{\mathds{1}}
+        \newcommand{\red}[1]{{\color{red} #1}}
+        \newcommand{\blue}[1]{{\color{blue} #1}}
+        \def\srelu{\sigma_{\textup{r}}}
+        \def\vsrelu{\vec{\sigma_{\textup{r}}}}
+        \def\vol{\textup{vol}}
+
+        \newenvironment{Q}
+        {%
+          \clearpage
+          \item
+        }
+        {%
+          \phantom{s} %lol doesn't work
+          \bigskip
+          \textbf{Solution.}
+        }
+
+        \title{CS 446 / ECE 449 --- Homework 3}
+        \author{\emph{your NetID here}}
+        \date{Version 1.0}
+
+        \begin{document}
+        \maketitle
+
+        \noindent\textbf{Instructions.}
+        \begin{itemize}
+          \item
+            Homework is due \textbf{Wednesday, October 13, at noon CST}; you have \textbf{3} late days in total for \textbf{all Homeworks}.
+        
+          \item
+            Everyone must submit individually at gradescope under \texttt{hw3} and \texttt{hw3code}.
+        
+          \item
+            The ``written'' submission at \texttt{hw3} \textbf{must be typed}, and submitted in
+            any format gradescope accepts (to be safe, submit a PDF).  You may use \LaTeX, markdown,
+            google docs, MS word, whatever you like; but it must be typed!
+        
+          \item
+            When submitting at \texttt{hw3}, gradescope will ask you to \textbf{mark out boxes
+            around each of your answers}; please do this precisely!
+        
+          \item
+            Please make sure your NetID is clear and large on the first page of the homework.
+        
+          \item
+            Your solution \textbf{must} be written in your own words.
+            Please see the course webpage for full \textbf{academic integrity} information.
+            You should cite any external reference you use.
+        
+          \item
+            We reserve the right to reduce the auto-graded score for
+            \texttt{hw3code} if we detect funny business (e.g., your solution
+            lacks any algorithm and hard-codes answers you obtained from
+            someone else, or simply via trial-and-error with the autograder).
+            
+          \item
+           When submitting to \texttt{hw3code}, only upload \texttt{hw3.py} and \texttt{hw3\_utils.py}. Additional files will be ignored.
+           
+        \end{itemize}
+        \noindent\textbf{Version History.}
+        \begin{enumerate}
+            \item Initial version.
+        \end{enumerate}
+        
+\begin{enumerate}[font={\Large\bfseries},left=0pt]
+
+\begin{Q}
+\textbf{\Large Ensemble Methods}
+
+In this question, you will implement several ensemble methods including Bagging and AdaBoost on a simple dataset. The methods will learn a binary classification of 2D datapoints in $[-1, 1]^2$.
+
+We have provided a few helper functions in \texttt{hw3\_utils.py}.
+\begin{itemize}
+    \item \texttt{visualization()} visualizes a dataset and the ensemble's predictions in 2D space.
+    \item \texttt{get\_dataset\_fixed()} returns a simple dataset with pre-defined datapoints. Please use this dataset for the plot.
+    \item \texttt{get\_dataset\_random()} returns a simple dataset by random construction. You may play with it and test your algorithm.
+\end{itemize}
+
+You will need to implement functions and classes defined in \texttt{hw3.py}. When uploading to Gradescope, please pack the two files \texttt{hw3\_utils.py} and \texttt{hw3.py} (without folder) together into one zip file.
+
+\begin{enumerate}
+    \item \textbf{Weak learner}
+    
+    To begin with, you will implement a weak learner to do the binary classification.
+    
+    A decision stump is a one-level decision tree. It looks at a single feature, and then makes a classification by thresholding on this feature. Given a dataset with positive weights assigned to each datapoint, we can find a stump that minimizes the weighted error:
+    
+    $$
+        L = \sum_{i=1}^nw^{(i)}\cdot \bm{1}(y^{(i)} \ne \hat y^{(i)})
+    $$
+    
+    Here $w^{(i)}$ is the weight of the $i$-th datapoint, and the prediction $\hat y^{(i)}$ is given by thresholding on the $k$-th feature of datapoint $\bm{x}^{(i)}$:
+    
+    $$
+        \hat y^{(i)} = 
+        \begin{cases}
+            s,\quad & \text{if }x^{(i)}_k \ge t \\
+            -s,\quad & \text{otherwise}
+        \end{cases}
+    $$
+    
+    For the 2D dataset we have, the parameters of this stumps are the sign $s\in\{+1, -1\}$, the feature dimension $k\in\{1, 2\}$, and the threshold $t\in[-1, 1]$. In this question, your task is to find out the best stump given the dataset and weights.
+    
+    Learning a decision stump requires learning a threshold in each dimension and then picking the best one. To learn a threshold in a dimension, you may simply sort the data in the chosen dimension, and calculate the loss on each candidate threshold. Candidates are midpoints between one point and the next, as well as the boundaries of our range of inputs.
+    
+    Please implement the \texttt{Stump} class in \texttt{hw3.py}. You may define your own functions inside the class, but do not change the interfaces of \texttt{\_\_init\_\_()} and \texttt{predict()}. Please read template file for further instructions.
+    
+    \item \textbf{Weak learner's predictions}
+    
+    Now test your implementation of \texttt{Stump} on the dataset given by \texttt{get\_dataset\_fixed()}. Suppose all the datapoints are equally weighted. Please answer the following questions in your written submission:
+    
+    \begin{itemize}
+        \item What is your decision function?
+        \item How many datapoints are mis-classified?
+        \item Using the helper function \texttt{visualization()}, include a visualization of your stump's predictions.
+    \end{itemize}
+    
+    \item \textbf{Bagging}
+    
+    As we have learned from the class, we can utilize ensemble methods to create a strong learner from weak learners we have for part (a). Please complete \texttt{bagging()} in \texttt{hw3.py}. This function should take the whole dataset as input, and sample a subset from it in each step, to build a list of different weak learners.
+    
+    Please do not change the random sampling of \texttt{sample\_indices}, and use the default random \texttt{seed=0}, so that your code can behave consistently in the autograder.
+    
+    \item \textbf{AdaBoost}
+
+    Now please implement AdaBoost algorithm. As we have learned in class, in each step of AdaBoost, it
+    \begin{itemize}
+        \item Finds the optimal weak learner according to current data weights
+        \item Acquires the weak learner's predictions
+        \item Calculates the weight for this weak learner
+        \item Updates the weights for datapoints
+    \end{itemize}
+    Complete \texttt{adaboost()} in \texttt{hw3.py}. It should return a series of weak learners and their weights.
+    
+    \item \textbf{Visualization}
+    
+    Run your Bagging and AdaBoost algorithms on the fixed dataset given by \texttt{get\_dataset\_fixed()}. Set the number of weak classifiers to $20$, and for Bagging, set the number of samples to $15$ for learning each classifier. Please answer the following questions in your written submission:
+    \begin{itemize}
+        \item Are they performing better than the individual weak learner in (b)?
+        \item Include visualizations for both algorithms in your written submission.
+    \end{itemize}
+
+\end{enumerate}
+\end{Q}
+
+\begin{tcolorbox}
+
+\end{tcolorbox}
+
+\begin{Q}
+\textbf{\Large Learning Theory.}
+\begin{enumerate}
+    \item \textbf{VC Dimensions.} In this problem, we'll explore VC dimensions! First, a few definitions that we will use in this problem. For a feature space $\mathcal{X}$, let $\mathcal{F}$ be a set of binary classifier of the form $f:\mathcal{X}\rightarrow\{0, 1\}$. $\mathcal{F}$ is said to \textbf{shatter} a set of $k$ distinct points $\{\bm{x}^{(i)}\}_{i=1}^{k}\subset \mathcal{X}$ if for each set of label assignments $(y^{(i)})_{i=1}^{k} \in \text{\{0, 1\}}^k$ to these points, there is an $f\in \mathcal{F}$ which makes no mistakes when classifying $D$.
+  
+  The VC Dimension of $\mathcal{F}$ is the largest non-negative integer $k\in $ such that there is a set of $k$ points that $\mathcal{F}$ can shatter.
+  Even more formally, let $VC(\mathcal{F})$ denote the VC Dimension of $\mathcal{F}$. It can be defined as:
+  \begin{align}
+      VC(\mathcal{F}) = &\max_{k} \ k
+      &\text{s.t.}\ \exists \{\bm{x}^{(i)}\}_{i=1}^{k}\subset \mathcal{X}, \forall (y^{(i)})_{i=1}^{k} \in \text{\{0, 1\}}^k\ ,\exists f\in\mathcal{F}, \forall i: f(\bm{x}^{(i)})=y^{(i)}
+  \end{align}
+  The intuition here is that VC dimension captures some kind of complexity or capacity of a set of functions $\mathcal{F}$.
+  
+  \textbf{Note}: The straightforward proof strategy to show that the VC dimension of a set of classifiers is $k$ is to first show that for a set of $k$ points, the set is shattered by the set of classifiers. Then, show that any set of $k+1$ points cannot be shattered. You can do that by finding an assignment of labels which cannot be correctly classified using $\mathcal{F}$.
+  
+  \textbf{Notation}: We denote $\bm{1}_{\text{condition}}(\cdot):\mathcal{X}\to \{0, 1\}$ to be the indicator function, i.e., $\bm{1}_{\text{condition}}(x)=1$ if the condition is true for $x$ and $\bm{1}_{\text{condition}}(x)=0$ otherwise. 
+  
+  
+  We will now find the VC dimension of some basic classifiers.
+  
+  \begin{enumerate}
+      \item \textbf{1D Affine Classifier}
+      
+  Let's start with a fairly simple problem. Consider $\mathcal{X}=\mathbb{R}$ and $\mathcal{Y}=\{0, 1\}$. Affine classifiers are of the form:
+  \begin{align}
+      \mathcal{F}_\text{affine} = {\{ \bm{1}_{wx + b \geq 0}(\cdot):\mathcal{X}\to \mathbb{R} \mid w,b\in \mathbb{R}\}},
+  \end{align}
+  Show what is $VC(\mathcal{F}_\text{affine})$ and prove your result. 
+  
+  \textbf{Hint}: Try less than a handful of points.
+  
+  \item \textbf{General Affine Classifier}
+  
+  We will now go one step further. Consider $\mathcal{X}=\mathbb{R}^k$ for some dimensionality $k\geq 1$, and $\mathcal{Y}=\{0, 1\}$. Affine classifiers in $k$ dimensions are of the form
+  \begin{align}
+      \mathcal{F}^k_\text{affine} = {\{ \textbf{1}_{ \bm{w}^\top \bm{x} + b \geq 0}(\cdot):\mathcal{X}\to \mathbb{R}\mid \bm{w}\in \mathbb{R}^k,b\in \mathbb{R} \}}
+  \end{align}
+  Show what is $VC(\mathcal{F}^k_\text{affine})$ and prove your result.
+  
+  \textbf{Hint}: Note that $\bm{w}^\top \bm{x}+b$ can be written as $[\bm{x}^\top\ \ 1] \left[\begin{array}{c}
+   \bm{w} \\
+  b
+  \end{array}\right]$. Moreover, consider to put all data points into a matrix, e.g.,
+  \begin{align}
+     \bm{X}= \left[\begin{array}{cc}
+   (\bm{x}^{(1)})^\top & 1 \\
+   (\bm{x}^{(2)})^\top & 1 \\
+  \vdots & \vdots
+  \end{array}\right] .
+  \end{align}
+  
+  \item \textbf{Decision Trees}
+  
+  Consider $\mathcal{X}=\mathbb{R}^k$ for some dimensionality $k\geq 1$, and $\mathcal{Y}=\{0, 1\}$. Show that the VC dimension of the axis-aligned (coordinate-splits) decision trees is infinite. 
+  
+  \textbf{Hint}: Consider an arbitrary dataset, and show that a decision tree can be constructed to exactly fit that dataset.
+  \end{enumerate}
+
+  \item \textbf{Rademacher Complexity.} 
+  Recall from class that the generalization error bound scales with the complexity of the function class $\mathcal{F}$, 
+    which, in turn, can be measured via Rademacher complexity. In this question we will compute the Rademacher complexity of linear functions step by step.
+    Let's consider a dataset $\{\bm{x}^{(i)}\}_{i=1}^{n}\subset \mathbb{R}^k$ with the norm bounded by $\|\bm{x}^{(i)}\|_2 \leq R$ 
+    and the set of linear classifiers $\mathcal{F} = \{\bm{x} \mapsto \bm{w}^\top \bm{x}\ \mid \bm{w}\in \mathbb{R}^k, \|\bm{w}\|_2 \leq W \}$. 
+    
+    \begin{enumerate}
+        \item For a fixed sign vector $\bm{\epsilon} = (\epsilon_1, ..., \epsilon_n) \in \{\pm 1\}^n$ show that:
+    $$
+      \max_{f\in\mathcal{F}}\frac{1}{n}\sum_{i=1}^{n}\epsilon_i f(\bm{x}^{(i)}) \leq W\|\bm{x_{\bm{\epsilon}}}\|_2
+    $$
+    where $\bm{x}_{\bm{\epsilon}}$ is defined as $\bm{x}_{\bm{\epsilon}} = \frac{1}{n}\sum_{i=1}^n \bm{x}^{(i)}\epsilon_i$. 
+    
+    \textbf{Hint}: Cauchy-Schwarz inequality.
+    
+    \item Assume $\epsilon_i$ is distributed i.i.d. according to
+    $\text{Pr}[\epsilon_i=+1] = \text{Pr}[\epsilon_i=-1] = 1/2$. Show that  $$\mathbb{E}_{\bm{\epsilon}}\left[\|\bm{x}_\epsilon\|^2\right] \leq \frac{R^2}{n}$$
+    
+    \item Assume  $\epsilon_i$ follows the same distribution as previous problem. Recall the definition of Rademacher complexity:
+    $$
+      \text{Rad}(\mathcal{F}) = \mathbb{E}_{\bm{\epsilon}} \left[ \max_{f\in\mathcal{F}}\frac{1}{n}\sum_{i=1}^{n}\epsilon_i f(\bm{x}^{(i)}) \right]
+    $$
+    Show that the Rademacher complexity of the set of linear classifiers is:
+    $$\text{Rad}(\mathcal{F}) \leq \frac{RW}{\sqrt{n}}$$
+    \textbf{Hint}: Jensen's inequality.
+    \end{enumerate}
+    
+\end{enumerate}
+\end{Q}
+\begin{tcolorbox}
+
+\end{tcolorbox}
+
+
+    \end{enumerate}
+
+
+
+\end{document}

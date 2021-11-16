@@ -1,0 +1,26 @@
+\begin{Q}
+\textbf{\Large K-Means}\\
+
+We are given a dataset $\cD = \{\vx^{(i)}\}_{i=1}^N$ of $d$-dimensional points $\vx^{(i)}\in\mathbb{R}^d$ which we are interested in partitioning them into $K$ clusters, each having a cluster center $\bm{\mu}_k\in \mathbb{R}^d$ ($k\in [K]$) via the K-Means algorithm. Note that we denote $[K]=\{1, \dots, K\}$ and similarly for $[N]$. Recall (from our lecture notes) that the algorithm optimizes the following cost function:
+\begin{equation}
+	\min_{\bm{\mu}_k\in \mathbb{R}^d, k\in [K]}\quad \min_{r_{ik}\in \{0, 1\}, i\in [N], k\in [K]} \quad \sum_{i=1}^N\sum_{k=1}^K\frac{1}{2} r_{ik} \|\vx^{(i)}-\bm{\mu}_k\|_2^2\quad \text{s.t.} \quad \sum_{k=1}^K r_{ik}=1\quad \forall k\in [K].
+\label{eq:KMeans2:main}
+\end{equation}
+
+\begin{enumerate}
+
+\item Given fixed cluster centers $\bm{\mu}_k$, $\forall k\in[K]$, what is the optimal assignments $r_{ik}$ for the optimization in \eqref{eq:KMeans2:main}? (assume that there is no $\|\vx^{(i)}-\bm{\mu}_p\|_2^2=\|\vx^{(i)}-\bm{\mu}_q\|_2^2$ for $\forall p \neq q$) 
+
+\item Given fixed assignments $r_{ik}$, $\forall i\in[N], k\in[K]$, we assume each cluster center has at least one data point assigned to it, i.e., $\sum_{i=1}^N r_{ik}>0$. What are the optimal cluster centers $\bm{\mu}_k$ for the optimization \eqref{eq:KMeans2:main}? 
+
+\item Implement the K-Means (with $K=2$) algorithm for a 2-dimensional dataset and submit your code to \texttt{hw4code} on gradescope. For the given dataset, visualize the clusters at the first three steps and attach the plots in your written (typed) report. Please see  \texttt{hw4.py} for details. 
+
+
+\end{enumerate}
+
+\end{Q}
+
+\begin{tcolorbox}
+
+
+\end{tcolorbox}
