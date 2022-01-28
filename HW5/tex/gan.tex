@@ -1,0 +1,102 @@
+\begin{Q}
+\textbf{\Large Generative Adversarial Networks}
+
+Let's implement a Generative Adversarial Network(GAN) to create images of hand-written digits!
+
+GAN consists of two parts: a generator network $G$ and a discriminator network $D$. $G$ is expected to generate a fake image from a random latent variable $\vz$, and $D$ is expected to distinguish fake images and real images. $G$ and $D$ are trained jointly with a minimax objective. In this question, we will use training data from MNIST to train our GAN, and let it produce some fake images that look like hand-written digits.
+
+\begin{enumerate}
+    \item First, let's implement the \texttt{Discriminator} network. It should take $32\times 32$ gray-scale images as input, and output the probability of each image being a real one. Its architecture is summarized in Table~\ref{table:D}.
+    \begin{table}[H]
+    \begin{center}
+    \caption{\textbf{Discriminator Architecture}}
+    \label{table:D}
+    \begin{tabular}{ccccccc}
+    \toprule
+    Layer & Layer & Input & Output & Kernel & Stride & Padding \\
+    Index & Type & Channels & Channels & Size & & \\
+    \midrule
+    1 & Conv2d & 1 & 16 & 3 & 1 & 1 \\
+    2 & LeakyReLU \\
+    3 & MaxPool & & & 2 & 2 & 0 \\
+    \midrule
+    4 & Conv2d & 16 & 32 & 3 & 1 & 1 \\
+    5 & LeakyReLU \\
+    6 & MaxPool & & & 2 & 2 & 0 \\
+    \midrule
+    7 & Conv2d & 32 & 64 & 3 & 1 & 1 \\
+    8 & LeakyReLU \\
+    9 & MaxPool & & & 2 & 2 & 0 \\
+    \midrule
+    10 & Conv2d & 64 & 128 & 3 & 1 & 1 \\
+    11 & LeakyReLU \\
+    12 & MaxPool & & & 4 & 4 & 0 \\
+    \midrule
+    13 & Linear & 128 & 1 \\
+    14 & Sigmoid \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{table}
+    A few notes:
+    \begin{itemize}
+        \item All Conv2d and Linear layers have bias terms. You do not have to explicitly set \texttt{Conv2d(..., bias=True)}, since it is default in PyTorch.
+        \item Also, you do not need to explicitly initialize the weights in Conv2d and Linear layers. The default initialization by PyTorch is good enough.
+        \item LeakyReLU is a variant of ReLU activation, which has a smaller gradient for negative inputs. Set \texttt{negative\_slope=0.2} for all LeakyReLU layers. More info about LeakyReLU at \url{https://pytorch.org/docs/stable/generated/torch.nn.LeakyReLU.html}.
+        \item You need to reshape the tensor sometimes in the forward pass.
+        \item Given a batch of images with shape \texttt{(batch\_size, 1, 32, 32)}, the output of this network should be a tensor with shape \texttt{(batch\_size)}, and the values in it are float numbers in $(0, 1)$. Our autograder will only be able to check the shape and range of the output, so be careful even if you have passed the test.
+    \end{itemize}
+    
+    \item Next, we can implement the \texttt{Generator} network. It should take $128$-d vectors (sampled from a Gaussian distribution) as input, and output fake images. Its architecture is summarized in Table~\ref{table:G}. We will make use of transposed convolutional layers. Given an input, a transposed convolutional layer can produce an output with a higher resolution. Thus, we can generate a $32\times 32$ image from a vector by stacking such layers. A visualization of how transposed convolutional layers work can be found at \url{https://github.com/vdumoulin/conv\_arithmetic/blob/master/README.md}.
+    \begin{table}[H]
+    \begin{center}
+    \caption{\textbf{Generator Architecture}}
+    \label{table:G}
+    \begin{tabular}{ccccccc}
+    \toprule
+    Layer & Layer & Input & Output & Kernel & Stride & Padding \\
+    Index & Type & Channels & Channels & Size & & \\
+    \midrule
+    1 & ConvTranspose2d & 128 & 64 & 4 & 1 & 0 \\
+    2 & LeakyReLU \\
+    \midrule
+    3 & ConvTranspose2d & 64 & 32 & 4 & 2 & 1 \\
+    4 & LeakyReLU \\
+    \midrule
+    5 & ConvTranspose2d & 32 & 16 & 4 & 2 & 1 \\
+    6 & LeakyReLU \\
+    \midrule
+    7 & ConvTranspose2d & 16 & 1 & 4 & 2 & 1 \\
+    8 & Tanh \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{table}
+    A few notes:
+    \begin{itemize}
+        \item Again, all Conv2d and Linear layers have bias terms and are initialized by the default setup.
+        \item Same LeakyReLU as above, with \texttt{negative\_slope=0.2} for all LeakyReLU layers.
+        \item You need to reshape the tensor sometimes in the forward pass.
+        \item Given a batch of latent vectors with shape \texttt{(batch\_size, 128)}, the output of this network should be a tensor with shape \texttt{(batch\_size, 1, 32, 32)}, and the values in it are float numbers in $(-1, 1)$. Our autograder will only be able to check the shape and range of the output, so be careful even if you have passed the test.
+    \end{itemize}
+    
+    \item In class we have learned that to jointly train the generator and discriminator, we optimize them with a minimax objective:
+    \begin{align*}
+        V(G, D):=\frac{1}{N}\sum_{i=1}^N\log D(\vx_i)&+\frac{1}{N}\sum_{j=1}^N\log (1-D(G(\vz_j))) \\
+        \min_G\max_D\ &V(G,D)
+    \end{align*}
+    Here $N$ is the batch size (set to $64$ in our implementation), $\vx_i$ is a real image, $\vz_j$ is a random latent variable sampled from a Gaussian distribution, and $G(\vz_j)$ is a fake image generated from it. Note that we are taking average to approximate the expectation, since we are using SGD to optimize $G$ and $D$.
+    
+    Please complete the function \texttt{calculate\_V()} in \texttt{GAN}. You may (but not required to) use the binary cross entropy loss (see \url{https://pytorch.org/docs/stable/generated/torch.nn.BCELoss.html}) to simplify the implementation, but be careful about the sign and reduction method of BCELoss.
+    
+    \item We are ready to start training our GAN. The training pipeline is already provided in \texttt{train()}, and there is a \texttt{visualize()} function for your convenience. Train our GAN for $10$ epochs, and \textbf{include the generated images after training in your PDF submission}.
+
+    Notes from TA:
+    \begin{itemize}
+        \item Training $10$ epochs takes me about an hour on my laptop without GPU support. I can see interesting images after two or three epochs.
+        \item You can make use of Google Colab(\url{https://colab.research.google.com/}), where you can access GPUs freely and accelerate the training. Remember to set \texttt{Runtime->Change runtime type->Hardware accelerator}.
+        \item Some random seeds may lead to degenerated results. It's OK to try a few and manually set your random seed (\texttt{torch.manual\_seed()}).
+    \end{itemize}
+\end{enumerate}
+
+\end{Q}

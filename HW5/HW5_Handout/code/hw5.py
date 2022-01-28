@@ -34,6 +34,26 @@ class Discriminator(nn.Module):
         """
         super().__init__()
         # Your code here
+        torch.manual_seed(0)
+        self.model = nn.Sequential(
+            nn.Conv2d(1,16,3,1,1),                      # Layer 1                     
+            nn.LeakyReLU(negative_slope=0.2),           # Layer 2         
+            nn.MaxPool2d(2,2,0),                        # Layer 3                 
+            nn.Conv2d(16,32,3,1,1),                     # Layer 4                     
+            nn.LeakyReLU(negative_slope=0.2),           # Layer 5         
+            nn.MaxPool2d(2,2,0),                        # Layer 6                 
+            nn.Conv2d(32,64,3,1,1),                     # Layer 7                 
+            nn.LeakyReLU(negative_slope=0.2),           # Layer 8         
+            nn.MaxPool2d(2,2,0),                        # Layer 9                 
+            nn.Conv2d(64,128,3,1,1),                    # Layer 10
+            nn.LeakyReLU(negative_slope=0.2),           # Layer 11
+            nn.MaxPool2d(4,4,0),                        # Layer 12
+            # nn.Linear(128, 1),                          # Layer 13                 
+            # nn.Sigmoid(),                               # Layer 14
+
+        )         
+        self.fc = nn.Linear(128,1)
+        self.sig = nn.Sigmoid()                  
 
     def forward(self, x):
         """
@@ -47,7 +67,15 @@ class Discriminator(nn.Module):
             each example being a *real* image. Values in range (0, 1).
         """
         # Your code here
+        # output = self.model(x)
 
+        N=x.shape[0]
+        y = self.model(x.view(N,1,32,32))
+        y = y.view(N,128)
+        y = self.fc(y)
+        y = self.sig(y)
+        output =y.view(N)
+        return output
 
 class Generator(nn.Module):
     """Generator network."""
@@ -58,6 +86,17 @@ class Generator(nn.Module):
         """
         super().__init__()
         # Your code here
+        torch.manual_seed(0)
+        self.model = nn.Sequential(
+            nn.ConvTranspose2d(128, 64,4,1,0),
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.ConvTranspose2d(64, 32,4,2,1),
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.ConvTranspose2d(32, 16,4,2,1),
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.ConvTranspose2d(16, 1,4,2,1),
+            nn.Tanh()
+        )
 
     def forward(self, z):
         """
@@ -70,6 +109,9 @@ class Generator(nn.Module):
             A tensor with shape (batch_size, 1, 32, 32). Values in range (-1, 1).
         """
         # Your code here
+        N = z.shape[0]
+        output = self.model(z.view(N,128,1,1))
+        return output.view(N,1,32,32)
 
 
 class GAN(object):
@@ -99,6 +141,15 @@ class GAN(object):
             A tensor with only one element, representing the objective V.
         """
         # Your code here
+        N = x.shape[0]
+        V= 0
+        V1 = torch.log(self.D.forward(x))
+        V2 = torch.log(1-self.D.forward(self.G.forward(z)))
+        for i in range(N):
+            V+=V1[i]+V2[i]
+        V = V/N
+        # V=torch.mean(torch.log(self.D.forward(x))+torch.log(1-self.D.forward(self.G.forward(z))))
+        return V
 
     def train(self, epochs):
         for epoch in range(epochs):
